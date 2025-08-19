@@ -1,10 +1,12 @@
-const { router } = requirre("express");
+const { Router } = require("express");
 const zod = require("zod");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const { authenticateToken } = require("../../middlewares/auth");
+const { authenticateToken } = require("../middlewares/auth");
+const Account = require("../models/account");
 
 const JWT_SECRET = process.env.JWT_SECRET;
+const router = Router();
 
 const signupBody = zod.object({
   firstName: zod.string(),
@@ -14,6 +16,7 @@ const signupBody = zod.object({
 });
 router.post("/signup", async (req, res) => {
   const { success } = signupBody.safeParse(req.body);
+
   if (!success) {
     return res.status(411).json({
       msg: "Incorrect Inputs !!",
@@ -23,7 +26,7 @@ router.post("/signup", async (req, res) => {
   const existingUser = await User.findOne({
     userName: req.body.userName,
   });
-  if (!existingUser) {
+  if (existingUser) {
     return res.status(411).json({
       msg: "Username alredy taken !!",
     });
@@ -34,6 +37,12 @@ router.post("/signup", async (req, res) => {
     userName: req.body.userName,
     password: req.body.password,
   });
+
+  await Account.create({
+    userID: user._id,
+    balance: 7 + Math.random() * 1000,
+  });
+
   const token = jwt.sign(
     {
       userID: user._id,
@@ -51,7 +60,7 @@ const signinBody = zod.object({
   password: zod.string(),
 });
 router.post("/signin", async (req, res) => {
-  const success = signinBody.safeParse(req.body);
+  const { success } = signinBody.safeParse(req.body);
   if (!success) {
     return res.status(411).json({
       msg: "Incorrect Inputs !!",

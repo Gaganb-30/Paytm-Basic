@@ -1,4 +1,4 @@
-const { Schema, model } = reuire("mongoose");
+const { Schema, model } = require("mongoose");
 
 const userSchemma = new Schema({
   firstName: {
