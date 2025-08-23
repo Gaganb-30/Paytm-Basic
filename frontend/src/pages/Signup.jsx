@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef } from "react";
 import BottomWarning from "../components/BottomWarning";
 import Button from "../components/Button";
 import Heading from "../components/Heading";
@@ -8,10 +8,10 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 export const Signup = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const firstNameElement = useRef();
+  const lastNameElement = useRef();
+  const userNameElement = useRef();
+  const passwordElement = useRef();
   const navigate = useNavigate();
 
   return (
@@ -21,42 +21,43 @@ export const Signup = () => {
           <Heading label={"Sign up"} />
           <SubHeading label={"Enter your infromation to create an account"} />
           <InputBox
-            onChange={(e) => {
-              setFirstName(e.target.value);
-            }}
+            ref={firstNameElement}
             placeholder="Gagan"
             label={"First Name"}
           />
           <InputBox
-            onChange={(e) => {
-              setLastName(e.target.value);
-            }}
+            ref={lastNameElement}
             placeholder="Bisht"
             label={"Last Name"}
           />
           <InputBox
-            onChange={(e) => {
-              setUsername(e.target.value);
-            }}
-            placeholder="gbisht@gmail.com"
-            label={"Email"}
+            ref={userNameElement}
+            placeholder="Gagan@30"
+            label={"User Name"}
           />
           <InputBox
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
+            ref={passwordElement}
             placeholder="123456"
             label={"Password"}
           />
           <div className="pt-4">
             <Button
               onClick={async () => {
+                const firstName = firstNameElement.current.value;
+                const lastName = lastNameElement.current.value;
+                const userName = userNameElement.current.value;
+                const password = passwordElement.current.value;
+
+                firstNameElement.current.value = "";
+                lastNameElement.current.value = "";
+                userNameElement.current.value = "";
+                passwordElement.current.value = "";
                 const response = await axios.post(
                   "http://localhost:8000/api/v1/user/signup",
                   {
-                    username,
                     firstName,
                     lastName,
+                    userName,
                     password,
                   }
                 );
